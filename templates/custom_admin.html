@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Custom Admin Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ccc; }
+        th { background-color: #eee; }
+
+        form {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"], input[type="file"], select {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #357ae8;
+        }
+
+        .view-logs-btn {
+            padding: 10px 15px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .view-logs-btn:hover {
+            background-color: #218838;
+        }
+
+        .search-sort-container {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .search-sort-container form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .search-sort-container input,
+        .search-sort-container select {
+            flex: 1;
+        }
+
+        .video-feed {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Style for the webcam feed */
+        #webcam-feed {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .websocket-error {
+            color: red;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- View Logs Button -->
+    <a href="{% url 'view_logs' %}" class="view-logs-btn">View Logs</a>
+
+    <h1>Add New Face</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="name">Name:</label>
+        <input type="text" name="name" required><br><br>
+
+        <label for="image">Image:</label>
+        <input type="file" name="image" accept="image/*" required><br><br>
+
+        <button type="submit">Add Face</button>
+    </form>
+
+    <!-- Live Webcam Feed -->
+    <div class="video-feed">
+        <h2>Live Webcam Feed</h2>
+        <img id="webcam-feed" src="" width="640" height="480" alt="Live Webcam Feed"/>
+    </div>
+
+    <div class="search-sort-container">
+        <form method="GET">
+            <input type="text" name="search" placeholder="Search by name" value="{{ search_query }}">
+            <select name="sort">
+                <option value="name" {% if sort_by == "name" %}selected{% endif %}>Sort by Name (A-Z)</option>
+                <option value="date" {% if sort_by == "date" %}selected{% endif %}>Sort by Registration Date (Newest)</option>
+            </select>
+            <button type="submit">Search / Sort</button>
+        </form>
+    </div>
+
+    <h1>Registered Faces</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+        {% for face in faces %}
+        <tr>
+            <td>{{ face.name }}</td>
+            <td><img src="{{ face.image.url }}" width="100"></td>
+            <td>
+                <form method="POST" action="{% url 'delete_face' face.id %}">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" style="text-align: center;">No faces found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- WebSocket Script for Live Feed -->
+    <script>
+        const webcamImage = document.getElementById('webcam-feed');
+        const websocketErrorDiv = document.createElement('div');
+        websocketErrorDiv.classList.add('websocket-error');
+        document.body.appendChild(websocketErrorDiv);
+
+        // Create WebSocket connection to the video_feed WebSocket endpoint
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/video_feed/');
+
+        // When the WebSocket connection is established
+        socket.onopen = function(e) {
+            console.log("WebSocket connection established");
+            websocketErrorDiv.style.display = 'none';  // Hide error if connection is established
+        };
+
+        // When receiving a message from the WebSocket
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.image) {
+                webcamImage.src = "data:image/jpeg;base64," + data.image;
+            }
+        };
+
+        // Handle errors with WebSocket
+        socket.onerror = function(e) {
+            console.error("WebSocket error:", e);
+            websocketErrorDiv.textContent = 'Error with WebSocket connection. Please try again later.';
+            websocketErrorDiv.style.display = 'block';  // Show error message
+        };
+
+        // When the WebSocket connection closes
+        socket.onclose = function(e) {
+            console.log("WebSocket connection closed");
+            websocketErrorDiv.textContent = 'WebSocket connection closed. Reconnecting...';
+            websocketErrorDiv.style.display = 'block';  // Show closing message
+            setTimeout(function() {
+                // Try reconnecting after a short delay
+                location.reload();
+            }, 5000);  // Reconnect after 5 seconds
+        };
+    </script>
+
+</body>
+</html>

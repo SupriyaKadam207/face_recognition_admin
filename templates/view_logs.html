@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Logs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #eee;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .no-logs {
+            text-align: center;
+            font-style: italic;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        .total-time {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>User Logs</h1>
+
+    <!-- Check if the user is an admin -->
+    {% if request.user.is_superuser %}
+        <p><strong>Admin View:</strong> You can see all user logs.</p>
+    {% else %}
+        <p><strong>Your View:</strong> You can only see your own logs.</p>
+    {% endif %}
+
+    <!-- If there are no logs, display a message -->
+    {% if logs %}
+        <table>
+            <tr>
+                <th>User</th>
+                <th>Action</th>
+                <th>Timestamp</th>
+            </tr>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.user.username }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- Display total time for logged-in users -->
+        <div class="total-time">
+            {% if request.user.is_superuser %}
+                <h3>Total Time Logged In (Today):</h3>
+                {% for user, total_time in user_durations.items %}
+                    <p>{{ user.username }}: {{ total_time }}</p>
+                {% endfor %}
+            {% else %}
+                <h3>Your Total Time Logged In (Today):</h3>
+                <p>{{ user_durations.request.user }}</p>
+            {% endif %}
+        </div>
+
+    {% else %}
+        <p class="no-logs">No logs available.</p>
+    {% endif %}
+
+    <a href="{% url 'custom_admin' %}">← Back to Admin Page</a>
+
+</body>
+</html>
