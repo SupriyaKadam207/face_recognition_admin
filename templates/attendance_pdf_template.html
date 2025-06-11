@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+            width: 100%; border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h2>Attendance Summary</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Days Present</th>
+            <th>Total Duration</th>
+            <th>Late Days</th>
+        </tr>
+        {% for name, data in summary.items %}
+        <tr>
+            <td>{{ name }}</td>
+            <td>{{ data.days_present }}</td>
+            <td>{{ data.total_duration|cut:".0" }}</td>
+            <td>{{ data.late_days }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

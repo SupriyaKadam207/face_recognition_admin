@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Attendance Report</title>
+    <style>
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+</head>
+<body>
+    <h1>Attendance Report</h1>
+
+    <h2>Total Hours Per User</h2>
+    {% if total_hours %}
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Total Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in total_hours %}
+            <tr>
+                <td>{{ item.face.name }}</td>
+                <td>{{ item.total_duration }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No attendance data available.</p>
+    {% endif %}
+
+    <h2>Absent Users</h2>
+    {% if absent_users %}
+        <ul>
+            {% for user in absent_users %}
+                <li>{{ user.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No absent users found.</p>
+    {% endif %}
+
+    <h2>Late Arrivals</h2>
+    {% if late_arrivals %}
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>In Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in late_arrivals %}
+                <tr>
+                    <td>{{ log.face.name }}</td>
+                    <td>{{ log.in_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No late arrivals found.</p>
+    {% endif %}
+
+</body>
+</html>

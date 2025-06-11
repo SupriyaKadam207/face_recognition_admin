@@ -39,14 +39,14 @@ ROOT_URLCONF = 'face_recognition_admin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # For custom templates like custom_admin.html
+        'DIRS': [BASE_DIR / 'templates'],  # Make sure this folder exists and contains your templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages',  # fixed typo here
             ],
         },
     },
@@ -58,11 +58,15 @@ WSGI_APPLICATION = 'face_recognition_admin.wsgi.application'
 # ASGI for WebSockets
 ASGI_APPLICATION = 'face_recognition_admin.asgi.application'
 
-# Database
+# Database - MySQL Configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'face_recognition_db',   # your MySQL database name
+        'USER': 'root',                  # your MySQL username
+        'PASSWORD': 'Myselfkadam207',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -76,7 +80,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 

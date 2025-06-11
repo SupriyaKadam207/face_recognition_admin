@@ -1,46 +1,48 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import FaceData, UserLog
 from django.contrib.auth.decorators import login_required
-from django.utils.timezone import timedelta
 from django.db.models import Q
 from django.http import HttpResponse, StreamingHttpResponse
+from django.utils.timezone import now
+from django.template.loader import render_to_string
+from django.utils.dateparse import parse_date
+
+from .models import FaceData, UserLog, Attendance
+from face_recognition_module.faiss_test import run_faiss_recognition, run_faiss_recognition_from_frame
+from face_recognition_module.video_stream import VideoStream
+from faceapp.attendance_utils import log_attendance
+
+from datetime import datetime, timedelta, time as dt_time
 import threading
 import cv2
+import time
 
-# Import your recognition functions
-from face_recognition_module.test import run_recognition
-from face_recognition_module.faiss_test import run_faiss_recognition
+from xhtml2pdf import pisa
+from openpyxl import Workbook
+import io  # ✅ for Excel streaming safety
 
+# ------------------ Admin Dashboard ------------------
 
 @login_required
 def custom_admin_view(request):
     if request.method == 'POST' and 'delete_id' not in request.POST:
         name = request.POST.get('name')
         image = request.FILES.get('image')
-
         if name and image:
             face = FaceData(name=name, image=image)
             face.save()
-
-            UserLog.objects.create(
-                user=request.user,
-                action=f"Added user: {name}"
-            )
-
+            UserLog.objects.create(user=request.user, action=f"Added user: {name}")
             return redirect('custom_admin')
 
-    # --- Search and Sort Logic ---
     search_query = request.GET.get('search', '')
     sort_by = request.GET.get('sort', 'name')
-
     faces = FaceData.objects.all()
 
     if search_query:
         faces = faces.filter(Q(name__icontains=search_query))
 
     if sort_by == 'date':
-        faces = faces.order_by('-id')  # Use created_at if available
-    elif sort_by == 'name':
+        faces = faces.order_by('-id')
+    else:
         faces = faces.order_by('name')
 
     return render(request, 'custom_admin.html', {
@@ -56,97 +58,212 @@ def delete_face(request, face_id):
         face = get_object_or_404(FaceData, id=face_id)
         face_name = face.name
         face.delete()
-
-        UserLog.objects.create(
-            user=request.user,
-            action=f"Deleted user: {face_name}"
-        )
-
+        UserLog.objects.create(user=request.user, action=f"Deleted user: {face_name}")
     return redirect('custom_admin')
 
+
+@login_required
+def update_face(request, face_id):
+    face = get_object_or_404(FaceData, id=face_id)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        image = request.FILES.get('image')
+        if name:
+            face.name = name
+        if image:
+            face.image = image
+        face.save()
+        UserLog.objects.create(user=request.user, action=f"Updated user: {face.name}")
+        return redirect('custom_admin')
+    return render(request, 'update_face.html', {'face': face})
+
+
+# ------------------ Logs ------------------
 
 @login_required
 def view_logs(request):
     if request.user.is_superuser:
         logs = UserLog.objects.all().order_by('-timestamp')
-        user_log_times = {}
-
-        for log in logs:
-            if log.duration:
-                if log.user not in user_log_times:
-                    user_log_times[log.user] = timedelta()
-                user_log_times[log.user] += log.duration
-
-        logs_with_total_time = []
-        for log in logs:
-            log.total_time = user_log_times.get(log.user, timedelta())
-            logs_with_total_time.append(log)
-
-        return render(request, 'view_logs.html', {
-            'logs': logs_with_total_time,
-            'is_admin': True
-        })
     else:
         logs = UserLog.objects.filter(user=request.user).order_by('-timestamp')
-
-        total_time = timedelta()
-        for log in logs:
-            if log.duration:
-                total_time += log.duration
-
-        return render(request, 'view_logs.html', {
-            'logs': logs,
-            'total_time': total_time
-        })
+    return render(request, 'view_logs.html', {'logs': logs})
 
 
-# ----------------------------
-# 🔹 New Recognition System Views
-# ----------------------------
-
-@login_required
-def start_basic_recognition(request):
-    thread = threading.Thread(target=run_recognition)
-    thread.start()
-    return HttpResponse("✅ Basic Face Recognition started in a new thread.")
-
+# ------------------ Face Recognition ------------------
 
 @login_required
 def start_faiss_recognition(request):
-    thread = threading.Thread(target=run_faiss_recognition)
+    thread = threading.Thread(target=run_faiss_recognition, daemon=True)
     thread.start()
-    return HttpResponse("✅ FAISS Face Recognition started in a new thread.")
+    return HttpResponse("✅ FAISS Face Recognition started.")
 
 
-# ----------------------------
-# 🔹 Webcam Feed and Recognition
-# ----------------------------
-
-# View to handle video feed from the camera
 @login_required
 def video_feed(request):
-    # Open the camera (0 is the default camera)
-    cap = cv2.VideoCapture(0)
+    stream = VideoStream("rtsp://srivitest:Work$789@192.168.1.37:554/streaming/channels/0601")
 
     def generate():
-        while True:
-            ret, frame = cap.read()  # Capture frame from webcam
-            if not ret:
-                break
+        frame_count = 0
+        try:
+            while True:
+                ret, frame = stream.read()
+                if not ret or frame is None:
+                    time.sleep(0.1)
+                    continue
 
-            # Run face recognition on the captured frame
-            # Run recognition using your custom function (make sure it processes the frame)
-            recognized_faces = run_recognition(frame)  # Replace with your recognition function
+                frame_count += 1
+                if frame_count % 2 != 0:
+                    continue
 
-            # You can now return the frame with recognition (bounding boxes, etc.)
-            for (x, y, w, h) in recognized_faces:  # Example of recognized face coordinates
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                try:
+                    faces = run_faiss_recognition_from_frame(frame)
+                except Exception as e:
+                    print(f"Recognition error: {e}")
+                    faces = []
 
-            # Convert the frame to JPEG for web transmission
-            _, jpeg = cv2.imencode('.jpg', frame)
-            frame = jpeg.tobytes()
+                for (x, y, w, h, name) in faces:
+                    color = (0, 255, 0) if name != "Unknown" else (0, 0, 255)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+                    cv2.putText(frame, name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+                    if name != "Unknown":
+                        try:
+                            face_obj = FaceData.objects.get(name=name)
+                            log_attendance(face_obj)
+                        except FaceData.DoesNotExist:
+                            print(f"{name} not found in FaceData.")
+                        except Exception as e:
+                            print(f"Logging error for {name}: {e}")
+
+                success, jpeg = cv2.imencode('.jpg', frame)
+                if not success:
+                    continue
+
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+        finally:
+            stream.release()
 
     return StreamingHttpResponse(generate(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+# ------------------ Attendance ------------------
+
+@login_required
+def attendance_logs(request):
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+
+    logs = Attendance.objects.select_related('face').all()
+
+    if not request.user.is_superuser:
+        logs = logs.filter(face__name=request.user.username)
+
+    # Filter by date range
+    if from_date:
+        from_date_obj = parse_date(from_date)
+        if from_date_obj:
+            logs = logs.filter(date__gte=from_date_obj)
+
+    if to_date:
+        to_date_obj = parse_date(to_date)
+        if to_date_obj:
+            logs = logs.filter(date__lte=to_date_obj)
+
+    logs = logs.order_by('-date', 'face__name')
+
+    return render(request, 'attendance_logs.html', {
+        'logs': logs,
+        'from_date': from_date,
+        'to_date': to_date
+    })
+
+
+def get_attendance_summary_queryset(request):
+    from_date = request.GET.get('from')
+    to_date = request.GET.get('to')
+
+    from_date = parse_date(from_date) if from_date not in [None, '', 'None'] else None
+    to_date = parse_date(to_date) if to_date not in [None, '', 'None'] else None
+
+    queryset = Attendance.objects.select_related('face').all()
+    if from_date and to_date:
+        queryset = queryset.filter(date__range=[from_date, to_date])
+    return queryset, from_date, to_date
+
+
+def build_summary(queryset):
+    summary = {}
+    for record in queryset:
+        name = record.face.name
+        if name not in summary:
+            summary[name] = {
+                'days_present': 0,
+                'total_duration': timedelta(),
+                'late_days': 0
+            }
+        summary[name]['days_present'] += 1
+        summary[name]['total_duration'] += record.duration or timedelta()
+        if record.in_time and record.in_time.time() > dt_time(10, 0):
+            summary[name]['late_days'] += 1
+    return summary
+
+
+@login_required
+def attendance_summary(request):
+    queryset, from_date, to_date = get_attendance_summary_queryset(request)
+    summary = build_summary(queryset)
+
+    all_faces = set(FaceData.objects.values_list('name', flat=True))
+    present_faces = set(summary.keys())
+    absent_users = all_faces - present_faces
+
+    return render(request, 'attendance_summary.html', {
+        'summary': summary,
+        'absent_users': absent_users,
+        'from_date': from_date,
+        'to_date': to_date
+    })
+
+
+# ------------------ Export Reports ------------------
+
+@login_required
+def export_attendance_pdf(request):
+    queryset, from_date, to_date = get_attendance_summary_queryset(request)
+    summary = build_summary(queryset)
+
+    html = render_to_string('attendance_pdf_template.html', {'summary': summary})
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="attendance_summary.pdf"'
+
+    result = pisa.CreatePDF(src=html, dest=response)
+    if result.err:
+        return HttpResponse('Error generating PDF', status=500)
+    return response
+
+
+@login_required
+def export_attendance_excel(request):
+    queryset, from_date, to_date = get_attendance_summary_queryset(request)
+    summary = build_summary(queryset)
+
+    output = io.BytesIO()
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Attendance Summary"
+    ws.append(["Name", "Days Present", "Total Duration", "Late Days"])
+
+    for name, data in summary.items():
+        duration_str = str(data['total_duration']).split('.')[0] if data['total_duration'] else "00:00:00"
+        ws.append([name, data['days_present'], duration_str, data['late_days']])
+
+    wb.save(output)
+    output.seek(0)
+
+    response = HttpResponse(
+        output,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="attendance_summary.xlsx"'
+    return response

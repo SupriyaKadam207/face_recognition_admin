@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Summary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .summary-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+        }
+        .summary-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .summary-header h1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .summary-info {
+            font-size: 16px;
+            color: #555;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .btn-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .btn-group a {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="summary-container">
+    <div class="summary-header">
+        <h1>Attendance Summary</h1>
+    </div>
+
+    <div class="summary-info">
+        {% if from_date and to_date %}
+            Showing records from <strong>{{ from_date }}</strong> to <strong>{{ to_date }}</strong>.
+        {% else %}
+            Showing all records.
+        {% endif %}
+    </div>
+
+    {% if summary %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Days Present</th>
+                    <th>Total Duration</th>
+                    <th>Late Days</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for name, data in summary.items %}
+                <tr>
+                    <td>{{ name }}</td>
+                    <td>{{ data.days_present }}</td>
+                    <td>{{ data.total_duration|stringformat:"s"|slice:":-7" }}</td>
+                    <td>{{ data.late_days }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="btn-group">
+        <a href="{% url 'export_attendance_pdf' %}?from={{ from_date }}&to={{ to_date }}" target="_blank" class="btn btn-outline-danger">Download PDF</a>
+        <a href="{% url 'export_attendance_excel' %}?from={{ from_date }}&to={{ to_date }}" target="_blank" class="btn btn-outline-success">Download Excel</a>
+    </div>
+    {% else %}
+        <p class="text-center">No attendance records found.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>
