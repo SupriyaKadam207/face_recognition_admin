@@ -1,0 +1,1 @@
+from .faiss_test import run_faiss_recognition_from_frame

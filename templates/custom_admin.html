@@ -62,15 +62,14 @@
             background-color: #0056b3;
         }
 
-        /* New Attendance Report Button Styles */
         .attendance-summary-btn {
-            background: #ffc107;  /* yellow/orange */
+            background: #ffc107;
             color: black;
             margin-left: 10px;
         }
 
         .attendance-summary-btn:hover {
-            background-color: #e0a800;  /* darker yellow/orange */
+            background-color: #e0a800;
             color: white;
         }
 
@@ -119,16 +118,23 @@
 </head>
 <body>
 
-    <!-- View Logs and Attendance Logs Buttons -->
+    <!-- Logs and Report Buttons -->
     <a href="{% url 'view_logs' %}" class="view-logs-btn">View Logs</a>
     <a href="{% url 'attendance_logs' %}" class="attendance-logs-btn">Attendance Logs</a>
     <a href="{% url 'attendance_summary' %}" class="attendance-summary-btn">Attendance Report</a>
 
+    <!-- Face Registration Form -->
     <h1>Add New Face</h1>
     <form method="POST" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" placeholder="Enter user name" required><br><br>
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" id="first_name" placeholder="Enter first name" required><br><br>
+
+        <label for="middle_name">Middle Name:</label>
+        <input type="text" name="middle_name" id="middle_name" placeholder="Enter middle name (optional)"><br><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" id="last_name" placeholder="Enter last name" required><br><br>
 
         <label for="image">Image:</label>
         <input type="file" name="image" id="image" accept="image/*" required><br><br>
@@ -136,12 +142,13 @@
         <button type="submit">Add Face</button>
     </form>
 
-    <!-- Live Webcam Feed -->
+    <!-- ✅ Live Webcam Feed -->
     <div class="video-feed">
         <h2>Live Webcam Feed</h2>
         <img id="webcam-feed" src="{% url 'video_feed' %}" width="640" height="480" alt="Live Webcam Feed" />
     </div>
 
+    <!-- Search & Sort -->
     <div class="search-sort-container">
         <form method="GET" action="">
             <input type="text" name="search" placeholder="Search by name" value="{{ search_query|default:'' }}">
@@ -153,11 +160,12 @@
         </form>
     </div>
 
+    <!-- Registered Faces Table -->
     <h1>Registered Faces</h1>
     <table>
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Full Name</th>
                 <th>Image</th>
                 <th>Actions</th>
             </tr>
@@ -165,20 +173,18 @@
         <tbody>
         {% for face in faces %}
             <tr>
-                <td>{{ face.name }}</td>
-                <td><img src="{{ face.image.url }}" width="100" alt="Image of {{ face.name }}"></td>
+                <td>{{ face.first_name }} {% if face.middle_name %}{{ face.middle_name }}{% endif %} {{ face.last_name }}</td>
+                <td><img src="{{ face.image.url }}" width="100" alt="Image of {{ face.first_name }}"></td>
                 <td>
                     <div class="actions-form">
-                        <!-- Delete button -->
-                        <form method="POST" action="{% url 'delete_face' face.id %}" onsubmit="return confirm('Are you sure you want to delete user {{ face.name }}?');">
+                        <!-- Delete -->
+                        <form method="POST" action="{% url 'delete_face' face.id %}" onsubmit="return confirm('Are you sure you want to delete {{ face.first_name }}?');">
                             {% csrf_token %}
                             <button type="submit">Delete</button>
                         </form>
 
-                        <!-- Update button -->
-                        <form method="GET" action="{% url 'update_face' face.id %}">
-                            <button type="submit">Update</button>
-                        </form>
+                        <!-- Update -->
+                        <form method="GET" action="{% url 'update_face' face.id %}"><button type="submit">Update</button></form>
                     </div>
                 </td>
             </tr>
@@ -189,42 +195,6 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <!-- WebSocket script is commented out for future use -->
-    <!--
-    <script>
-        const webcamImage = document.getElementById('webcam-feed');
-        const websocketErrorDiv = document.createElement('div');
-        websocketErrorDiv.classList.add('websocket-error');
-        document.body.appendChild(websocketErrorDiv);
-
-        const socket = new WebSocket('ws://' + window.location.host + '/ws/video_feed/');
-
-        socket.onopen = function(e) {
-            console.log("WebSocket connection established");
-            websocketErrorDiv.style.display = 'none';
-        };
-
-        socket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            if (data.image) {
-                webcamImage.src = "data:image/jpeg;base64," + data.image;
-            }
-        };
-
-        socket.onerror = function(e) {
-            console.error("WebSocket error:", e);
-            websocketErrorDiv.textContent = 'WebSocket error.';
-            websocketErrorDiv.style.display = 'block';
-        };
-
-        socket.onclose = function(e) {
-            console.log("WebSocket closed");
-            websocketErrorDiv.textContent = 'WebSocket closed.';
-            websocketErrorDiv.style.display = 'block';
-        };
-    </script>
-    -->
 
 </body>
 </html>

@@ -351,3 +351,149 @@ django.core.exceptions.ValidationError: ['“None” value has an invalid date f
 [2025-06-10 17:36:49,995] INFO: [ATTENDANCE] supriya updated at 2025-06-10 12:06:49.948860+00:00
 [2025-06-10 17:36:51,401] INFO: [ATTENDANCE] supriya updated at 2025-06-10 12:06:51.401952+00:00
 [2025-06-10 17:42:55,667] WARNING: Not Found: /favicon.ico
+[2025-06-11 09:11:56,967] WARNING: Not Found: /favicon.ico
+[2025-06-11 09:12:31,679] INFO: [ATTENDANCE] supriya entered at 2025-06-11 09:12:31.679368
+[2025-06-11 09:12:31,835] INFO: [ATTENDANCE] supriya entered at 2025-06-11 03:42:31.710603+00:00
+[2025-06-11 12:06:23,124] ERROR: Internal Server Error: /update-face/4/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\mysql\base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\MySQLdb\cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\MySQLdb\cursors.py", line 330, in _query
+    db.query(q)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\MySQLdb\connections.py", line 280, in query
+    _mysql.connection.query(self, query)
+MySQLdb.IntegrityError: (1048, "Column 'first_name' cannot be null")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 91, in update_face
+    face.save()
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\base.py", line 1138, in _save_table
+    updated = self._do_update(
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\base.py", line 1203, in _do_update
+    return filtered._update(values) > 0
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\query.py", line 1283, in _update
+    return query.get_compiler(self.db).execute_sql(ROW_COUNT)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\sql\compiler.py", line 2059, in execute_sql
+    row_count = super().execute_sql(result_type)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\sql\compiler.py", line 1622, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\backends\mysql\base.py", line 76, in execute
+    return self.cursor.execute(query, args)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\MySQLdb\cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\MySQLdb\cursors.py", line 330, in _query
+    db.query(q)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\MySQLdb\connections.py", line 280, in query
+    _mysql.connection.query(self, query)
+django.db.utils.IntegrityError: (1048, "Column 'first_name' cannot be null")
+[2025-06-11 12:09:21,632] ERROR: Internal Server Error: /delete-face/4/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 75, in delete_face
+    full_name = face.get_full_name()
+AttributeError: 'FaceData' object has no attribute 'get_full_name'
+[2025-06-11 12:14:13,870] ERROR: Internal Server Error: /delete-face/4/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 75, in delete_face
+    full_name = face.get_full_name()
+AttributeError: 'FaceData' object has no attribute 'get_full_name'
+[2025-06-11 12:14:25,365] ERROR: Internal Server Error: /delete-face/5/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 75, in delete_face
+    full_name = face.get_full_name()
+AttributeError: 'FaceData' object has no attribute 'get_full_name'
+[2025-06-11 12:14:33,596] ERROR: Internal Server Error: /delete-face/4/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 75, in delete_face
+    full_name = face.get_full_name()
+AttributeError: 'FaceData' object has no attribute 'get_full_name'
+[2025-06-11 12:20:03,197] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 15:07:46,801] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 15:33:41,217] ERROR: Internal Server Error: /video-feed/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 108, in video_feed
+    stream = VideoStream("rtsp://srivitest:Work$789@192.168.1.37:554/streaming/channels/0601")
+NameError: name 'VideoStream' is not defined
+[2025-06-11 15:41:17,388] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 15:43:18,592] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 15:49:55,692] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 16:04:37,623] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 16:09:16,072] INFO: [ATTENDANCE] supriya entered at 2025-06-11 16:09:16.072192
+[2025-06-11 16:21:05,903] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 16:37:10,843] INFO: [ATTENDANCE] supriya entered at 2025-06-11 16:37:10.843427
+[2025-06-11 16:49:04,542] INFO: [ATTENDANCE] supriya entered at 2025-06-11 16:49:04.542868
+[2025-06-11 16:52:04,639] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 16:54:58,712] INFO: [ATTENDANCE] supriya entered at 2025-06-11 16:54:58.712199
+[2025-06-11 17:02:53,019] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-11 17:05:35,432] INFO: [ATTENDANCE] supriya entered at 2025-06-11 17:05:35.432899
+[2025-06-11 18:02:01,305] INFO: [ATTENDANCE] supriya entered at 2025-06-11 18:02:01.305475
+[2025-06-12 09:34:49,548] WARNING: Not Found: /favicon.ico
+[2025-06-12 09:35:50,258] INFO: [ATTENDANCE] supriya entered at 2025-06-12 09:35:50.258420
+[2025-06-12 09:51:37,441] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-12 17:23:28,039] INFO: [ATTENDANCE] supriya entered at 2025-06-12 17:23:28.039678
+[2025-06-13 09:22:04,334] WARNING: Not Found: /favicon.ico
+[2025-06-13 09:23:06,577] INFO: [ATTENDANCE] supriya entered at 2025-06-13 09:23:06.577464
+[2025-06-13 17:25:38,275] INFO: [ATTENDANCE] supriya entered at 2025-06-13 17:25:38.275736
+[2025-06-16 09:24:05,474] WARNING: Not Found: /favicon.ico
+[2025-06-16 09:24:30,964] INFO: [ATTENDANCE] supriya entered at 2025-06-16 09:24:30.964575
+[2025-06-16 17:30:17,945] INFO: [ATTENDANCE] supriya entered at 2025-06-16 17:30:17.945741
+[2025-06-16 17:30:39,538] INFO: [ATTENDANCE] shravani entered at 2025-06-16 17:30:39.538030
+[2025-06-17 09:10:54,712] WARNING: Not Found: /favicon.ico
+[2025-06-17 09:11:27,124] INFO: [ATTENDANCE] supriya entered at 2025-06-17 09:11:27.124017
