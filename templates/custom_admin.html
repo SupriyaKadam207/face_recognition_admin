@@ -36,7 +36,7 @@
             background-color: #357ae8;
         }
 
-        .view-logs-btn, .attendance-logs-btn, .attendance-summary-btn {
+        .view-logs-btn, .attendance-logs-btn, .attendance-summary-btn, .leaderboard-btn, .log-details-btn {
             padding: 10px 15px;
             color: white;
             text-decoration: none;
@@ -45,33 +45,20 @@
             display: inline-block;
         }
 
-        .view-logs-btn {
-            background: #28a745;
-        }
+        .view-logs-btn { background: #28a745; }
+        .view-logs-btn:hover { background-color: #218838; }
 
-        .view-logs-btn:hover {
-            background-color: #218838;
-        }
+        .attendance-logs-btn { background: #007bff; margin-left: 10px; }
+        .attendance-logs-btn:hover { background-color: #0056b3; }
 
-        .attendance-logs-btn {
-            background: #007bff;
-            margin-left: 10px;
-        }
+        .attendance-summary-btn { background: #ffc107; color: black; margin-left: 10px; }
+        .attendance-summary-btn:hover { background-color: #e0a800; color: white; }
 
-        .attendance-logs-btn:hover {
-            background-color: #0056b3;
-        }
+        .leaderboard-btn { background: #6f42c1; margin-left: 10px; }
+        .leaderboard-btn:hover { background-color: #5936a1; }
 
-        .attendance-summary-btn {
-            background: #ffc107;
-            color: black;
-            margin-left: 10px;
-        }
-
-        .attendance-summary-btn:hover {
-            background-color: #e0a800;
-            color: white;
-        }
+        .log-details-btn { background: #17a2b8; margin-left: 10px; }
+        .log-details-btn:hover { background-color: #138496; }
 
         .search-sort-container {
             background: white;
@@ -119,14 +106,18 @@
 <body>
 
     <!-- Logs and Report Buttons -->
-    <a href="{% url 'view_logs' %}" class="view-logs-btn">View Logs</a>
-    <a href="{% url 'attendance_logs' %}" class="attendance-logs-btn">Attendance Logs</a>
-    <a href="{% url 'attendance_summary' %}" class="attendance-summary-btn">Attendance Report</a>
+    <a href="{% url 'view_logs' %}" class="view-logs-btn">📘 View Logs</a>
+    <a href="{% url 'attendance_summary' %}" class="attendance-summary-btn">📊 Attendance Report</a>
+    <a href="{% url 'attendance_leaderboard' %}" class="leaderboard-btn">🏆 Leaderboard</a>
+    <a href="{% url 'attendance_log_details' %}" class="log-details-btn">📂 View IN/OUT Log Details</a>
 
     <!-- Face Registration Form -->
     <h1>Add New Face</h1>
     <form method="POST" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
+        <label for="employee_id">Employee ID:</label>
+        <input type="text" name="employee_id" id="employee_id" placeholder="Enter employee ID" required><br><br>
+
         <label for="first_name">First Name:</label>
         <input type="text" name="first_name" id="first_name" placeholder="Enter first name" required><br><br>
 
@@ -165,6 +156,7 @@
     <table>
         <thead>
             <tr>
+                <th>Employee ID</th>
                 <th>Full Name</th>
                 <th>Image</th>
                 <th>Actions</th>
@@ -173,6 +165,7 @@
         <tbody>
         {% for face in faces %}
             <tr>
+                <td>{{ face.employee_id }}</td>
                 <td>{{ face.first_name }} {% if face.middle_name %}{{ face.middle_name }}{% endif %} {{ face.last_name }}</td>
                 <td><img src="{{ face.image.url }}" width="100" alt="Image of {{ face.first_name }}"></td>
                 <td>
@@ -184,13 +177,15 @@
                         </form>
 
                         <!-- Update -->
-                        <form method="GET" action="{% url 'update_face' face.id %}"><button type="submit">Update</button></form>
+                        <form method="GET" action="{% url 'update_face' face.id %}">
+                            <button type="submit">Update</button>
+                        </form>
                     </div>
                 </td>
             </tr>
         {% empty %}
             <tr>
-                <td colspan="3">No faces found.</td>
+                <td colspan="4">No faces found.</td>
             </tr>
         {% endfor %}
         </tbody>

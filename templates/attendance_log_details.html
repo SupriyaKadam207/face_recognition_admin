@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Detailed IN/OUT Logs{% endblock %}
+
+{% block content %}
+<h2>📋 Detailed Attendance Logs</h2>
+
+<form method="get" style="margin-bottom: 20px;">
+  <label for="from_date">From:</label>
+  <input type="date" id="from_date" name="from_date" value="{{ from_date }}" style="margin-right: 10px;">
+
+  <label for="to_date">To:</label>
+  <input type="date" id="to_date" name="to_date" value="{{ to_date }}" style="margin-right: 10px;">
+
+  <button type="submit" style="padding: 6px 12px; background-color: #007bff; color: white; border: none; border-radius: 4px;">
+    Filter
+  </button>
+</form>
+
+{% if grouped_entries %}
+  {% for entry in grouped_entries %}
+    <h4>👤 <b>{{ entry.face.full_name }}</b> — {{ entry.date }}</h4>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+      <thead>
+        <tr style="background-color: #f0f0f0;">
+          <th style="padding: 10px; border: 1px solid #ccc;">Status</th>
+          <th style="padding: 10px; border: 1px solid #ccc;">Timestamp</th>
+          <th style="padding: 10px; border: 1px solid #ccc;">Duration since last IN</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in entry.sessions %}
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ccc;">
+            {% if log.status == "IN" %}
+              <span style="color: green; font-weight: bold;">IN</span>
+            {% else %}
+              <span style="color: red; font-weight: bold;">OUT</span>
+            {% endif %}
+          </td>
+          <td style="padding: 8px; border: 1px solid #ccc;">{{ log.timestamp|date:"h:i:s A" }}</td>
+          <td style="padding: 8px; border: 1px solid #ccc;">
+            {% if log.status == "OUT" and log.duration %}
+              {{ log.duration }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="2" style="padding: 8px; border: 1px solid #ccc; font-weight: bold; text-align: right;">
+            🕒 Total Time Present:
+          </td>
+          <td style="padding: 8px; border: 1px solid #ccc; font-weight: bold;">
+            {{ entry.total_duration }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {% endfor %}
+{% else %}
+  <p style="text-align: center;">No attendance data found for the selected range.</p>
+{% endif %}
+{% endblock %}

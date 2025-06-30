@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        nav {
+            margin-bottom: 20px;
+        }
+
+        nav a {
+            margin-right: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="{% url 'custom_admin' %}">🏠 Home</a>
+            <a href="{% url 'view_logs' %}">📘 Logs</a>
+            <a href="{% url 'attendance_logs' %}">📅 Attendance</a>
+            <a href="{% url 'attendance_summary' %}">📊 Summary</a>
+            <a href="{% url 'attendance_leaderboard' %}">🏆 Leaderboard</a>
+        </nav>
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

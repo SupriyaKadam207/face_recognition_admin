@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Sum, Count
 from django.http import HttpResponse, StreamingHttpResponse
 from django.utils import timezone
 from django.utils.timezone import now, localtime
 from django.template.loader import render_to_string
 from django.utils.dateparse import parse_date
+from django.utils.safestring import mark_safe
+from django.db.models.functions import TruncDate
+from collections import defaultdict
+from django.db.models import Max
 
 from .models import FaceData, UserLog, Attendance
+from .models import AttendanceLogEntry
 from face_recognition_module import run_faiss_recognition_from_frame
 from datetime import datetime, time as dt_time, timedelta
 from xhtml2pdf import pisa
@@ -17,6 +22,7 @@ import cv2
 import threading
 import time
 import io
+import json
 
 # ------------------ Threaded Video Capture ------------------
 
@@ -41,26 +47,30 @@ class VideoCamera:
         self.running = False
         self.cap.release()
 
-
 # ------------------ Admin Dashboard ------------------
 
 @login_required
 def custom_admin_view(request):
     if request.method == 'POST' and 'delete_id' not in request.POST:
+        employee_id = request.POST.get('employee_id')
         first_name = request.POST.get('first_name')
         middle_name = request.POST.get('middle_name')
         last_name = request.POST.get('last_name')
         image = request.FILES.get('image')
 
-        if first_name and image:
+        if employee_id and first_name and image:
+            if FaceData.objects.filter(employee_id=employee_id).exists():
+                return redirect('custom_admin')
+
             face = FaceData(
+                employee_id=employee_id,
                 first_name=first_name,
                 middle_name=middle_name,
                 last_name=last_name,
                 image=image
             )
             face.save()
-            UserLog.objects.create(user=request.user, action=f"Added user: {face.full_name()}")
+            UserLog.objects.create(user=request.user, action=f"Added user: {face.full_name()} ({employee_id})")
             return redirect('custom_admin')
 
     search_query = request.GET.get('search', '')
@@ -85,7 +95,6 @@ def custom_admin_view(request):
         'sort_by': sort_by
     })
 
-
 @login_required
 def delete_face(request, face_id):
     if request.method == 'POST':
@@ -95,11 +104,11 @@ def delete_face(request, face_id):
         UserLog.objects.create(user=request.user, action=f"Deleted user: {full_name}")
     return redirect('custom_admin')
 
-
 @login_required
 def update_face(request, face_id):
     face = get_object_or_404(FaceData, id=face_id)
     if request.method == 'POST':
+        face.employee_id = request.POST.get('employee_id')
         face.first_name = request.POST.get('first_name')
         face.middle_name = request.POST.get('middle_name')
         face.last_name = request.POST.get('last_name')
@@ -111,7 +120,6 @@ def update_face(request, face_id):
         return redirect('custom_admin')
     return render(request, 'update_face.html', {'face': face})
 
-
 # ------------------ Logs ------------------
 
 @login_required
@@ -119,14 +127,12 @@ def view_logs(request):
     logs = UserLog.objects.all().order_by('-timestamp') if request.user.is_superuser else UserLog.objects.filter(user=request.user).order_by('-timestamp')
     return render(request, 'view_logs.html', {'logs': logs})
 
-
 # ------------------ Face Recognition ------------------
 
 @login_required
 def start_faiss_recognition(request):
     threading.Thread(target=run_faiss_recognition, daemon=True).start()
     return HttpResponse("✅ FAISS Face Recognition started.")
-
 
 @login_required
 def video_feed(request):
@@ -158,7 +164,7 @@ def video_feed(request):
 
                     if name != "Unknown":
                         try:
-                            face_obj = FaceData.objects.get(first_name=name)
+                            face_obj = FaceData.objects.filter(first_name=name).first()
                             log_attendance(face_obj)
                         except FaceData.DoesNotExist:
                             print(f"[Warning] {name} not found in FaceData.")
@@ -176,24 +182,82 @@ def video_feed(request):
 
     return StreamingHttpResponse(generate(), content_type='multipart/x-mixed-replace; boundary=frame')
 
-
 # ------------------ Attendance ------------------
 
 def log_attendance(face_obj):
-    today = now().date()
     current_time = timezone.localtime()
+    today_start = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + timedelta(days=1)
 
-    attendance, created = Attendance.objects.get_or_create(face=face_obj, date=today)
+    # Get or create today's attendance record
+    attendance, _ = Attendance.objects.get_or_create(face=face_obj, date=today_start.date())
 
-    if attendance.in_time is None:
-        attendance.in_time = current_time
-    else:
-        attendance.out_time = current_time
-        if attendance.in_time and attendance.out_time:
-            attendance.duration = attendance.out_time - attendance.in_time  # ✅ Correct calculation
+    # Get the last entry for today using accurate datetime range
+    last_entry = AttendanceLogEntry.objects.filter(
+        face=face_obj,
+        timestamp__gte=today_start,
+        timestamp__lt=today_end
+    ).order_by('-timestamp').first()
 
+    # Debounce: skip if last entry was < 60 seconds ago
+    if last_entry and (current_time - last_entry.timestamp).total_seconds() < 60:
+        print("⏳ Debounced — Skipping duplicate log")
+        return
+
+    last_event_type = last_entry.event_type if last_entry else None
+
+    # Alternate: log OUT if last was IN, else log IN
+    event_type = 'OUT' if last_event_type == 'IN' else 'IN'
+
+    AttendanceLogEntry.objects.create(
+        face=face_obj,
+        timestamp=current_time,
+        event_type=event_type
+    )
+
+    # Recalculate duration
+    logs = AttendanceLogEntry.objects.filter(
+        face=face_obj,
+        timestamp__gte=today_start,
+        timestamp__lt=today_end
+    ).order_by('timestamp')
+
+    total_duration = timedelta()
+    in_time = None
+    first_in_time = None
+    last_out_time = None
+
+    for log in logs:
+        if log.event_type == 'IN':
+            in_time = log.timestamp
+            if not first_in_time:
+                first_in_time = in_time
+        elif log.event_type == 'OUT' and in_time:
+            duration = log.timestamp - in_time
+            total_duration += duration
+            last_out_time = log.timestamp
+            in_time = None
+
+    # Convert to IST for debug log
+    first_in_time_local = timezone.localtime(first_in_time) if first_in_time else None
+    last_out_time_local = timezone.localtime(last_out_time) if last_out_time else None
+
+    # Save attendance record
+    attendance.in_time = first_in_time
+    attendance.out_time = last_out_time
+    attendance.duration = total_duration
     attendance.save()
 
+    # Debug logs
+    print("---- Attendance Logging Debug ----")
+    print(f"🧍 Face: {face_obj.full_name()}")
+    print(f"🕒 Current Time: {current_time}")
+    print(f"📄 Last Entry: {last_event_type}")
+    print(f"✅ Logged: {event_type} at {current_time}")
+    print(f"🧾 Total Duration: {total_duration}")
+    print(f"🕑 First IN: {first_in_time_local}, Last OUT: {last_out_time_local}")
+    print(f"✅ Attendance updated.")
+    print("-----------------------------------")
 
 @login_required
 def attendance_logs(request):
@@ -222,7 +286,6 @@ def attendance_logs(request):
         'to_date': to_date
     })
 
-
 # ------------------ Attendance Summary ------------------
 
 def get_attendance_summary_queryset(request):
@@ -235,7 +298,6 @@ def get_attendance_summary_queryset(request):
     if from_date and to_date:
         queryset = queryset.filter(date__range=[from_date, to_date])
     return queryset, from_date, to_date
-
 
 def build_summary(queryset):
     summary = {}
@@ -253,7 +315,6 @@ def build_summary(queryset):
             summary[name]['late_days'] += 1
     return summary
 
-
 @login_required
 def attendance_summary(request):
     queryset, from_date, to_date = get_attendance_summary_queryset(request)
@@ -263,13 +324,17 @@ def attendance_summary(request):
     present_faces = set(summary.keys())
     absent_users = all_faces - present_faces
 
+    names = list(summary.keys())
+    days_present = [data['days_present'] for data in summary.values()]
+
     return render(request, 'attendance_summary.html', {
         'summary': summary,
         'absent_users': absent_users,
         'from_date': from_date,
-        'to_date': to_date
+        'to_date': to_date,
+        'names': mark_safe(json.dumps(names)),
+        'days_present': mark_safe(json.dumps(days_present))
     })
-
 
 # ------------------ Export Reports ------------------
 
@@ -286,7 +351,6 @@ def export_attendance_pdf(request):
     if result.err:
         return HttpResponse('Error generating PDF', status=500)
     return response
-
 
 @login_required
 def export_attendance_excel(request):
@@ -312,3 +376,126 @@ def export_attendance_excel(request):
     )
     response['Content-Disposition'] = 'attachment; filename="attendance_summary.xlsx"'
     return response
+
+# ------------------ Leaderboard View (Updated with date filter) ------------------
+
+@login_required
+def attendance_leaderboard(request):
+    from_date = request.GET.get('from')
+    to_date = request.GET.get('to')
+
+    queryset = Attendance.objects.select_related('face').all()
+
+    if from_date:
+        queryset = queryset.filter(date__gte=parse_date(from_date))
+    if to_date:
+        queryset = queryset.filter(date__lte=parse_date(to_date))
+
+    leaderboard_data = (
+        queryset
+        .values('face')
+        .annotate(
+            days_present=Count('id'),
+            total_duration=Sum('duration')
+        )
+        .order_by('-days_present', '-total_duration')[:10]
+    )
+
+    leaderboard = []
+    for entry in leaderboard_data:
+        face_obj = FaceData.objects.get(id=entry['face'])
+        td = entry['total_duration']
+        formatted_duration = "0h 0m"
+        if td:
+            total_seconds = int(td.total_seconds())
+            days = td.days
+            hours = (total_seconds // 3600) % 24
+            minutes = (total_seconds // 60) % 60
+
+            formatted_duration = ""
+            if days > 0:
+                formatted_duration += f"{days}d "
+            if hours > 0:
+                formatted_duration += f"{hours}h "
+            if minutes > 0:
+                formatted_duration += f"{minutes}m"
+            if not formatted_duration.strip():
+                formatted_duration = "0h 0m"
+
+        leaderboard.append({
+            'full_name': face_obj.full_name(),
+            'days_present': entry['days_present'],
+            'total_duration': formatted_duration
+        })
+
+    return render(request, 'attendance_leaderboard.html', {
+        'leaderboard': leaderboard,
+        'from_date': from_date,
+        'to_date': to_date
+    })
+
+@login_required
+def attendance_log_details(request):
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+
+    entries = AttendanceLogEntry.objects.select_related('face')
+
+    if not request.user.is_superuser:
+        entries = entries.filter(face__first_name=request.user.username)
+
+    if from_date:
+        entries = entries.filter(timestamp__date__gte=from_date)
+    if to_date:
+        entries = entries.filter(timestamp__date__lte=to_date)
+
+    entries = entries.order_by('face__first_name', 'timestamp')
+
+    # Grouping: { (face, date): [entries] }
+    grouped_logs = defaultdict(list)
+    for entry in entries:
+        key = (entry.face, entry.timestamp.date())
+        grouped_logs[key].append(entry)
+
+    structured_data = []
+    for (face, date), logs in grouped_logs.items():
+        sessions = []
+        in_time = None
+        total_duration = timedelta()
+
+        for log in logs:
+            if log.event_type == "IN":
+                in_time = log.timestamp
+                sessions.append({
+                    'status': 'IN',
+                    'timestamp': log.timestamp,
+                    'duration': None
+                })
+            elif log.event_type == "OUT" and in_time:
+                duration = log.timestamp - in_time
+                total_duration += duration
+                sessions.append({
+                    'status': 'OUT',
+                    'timestamp': log.timestamp,
+                    'duration': duration
+                })
+                in_time = None
+            else:
+                sessions.append({
+                    'status': log.event_type,
+                    'timestamp': log.timestamp,
+                    'duration': None
+                })
+
+        structured_data.append({
+            'face': face,
+            'date': date,
+            'sessions': sessions,
+            'total_duration': total_duration
+        })
+
+    return render(request, 'attendance_log_details.html', {
+        'grouped_entries': structured_data,
+        'from_date': from_date,
+        'to_date': to_date
+    })

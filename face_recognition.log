@@ -497,3 +497,253 @@ NameError: name 'VideoStream' is not defined
 [2025-06-16 17:30:39,538] INFO: [ATTENDANCE] shravani entered at 2025-06-16 17:30:39.538030
 [2025-06-17 09:10:54,712] WARNING: Not Found: /favicon.ico
 [2025-06-17 09:11:27,124] INFO: [ATTENDANCE] supriya entered at 2025-06-17 09:11:27.124017
+[2025-06-17 17:34:40,867] INFO: [ATTENDANCE] supriya entered at 2025-06-17 17:34:40.867227
+[2025-06-18 09:22:33,987] WARNING: Not Found: /favicon.ico
+[2025-06-18 09:36:44,011] INFO: [ATTENDANCE] supriya entered at 2025-06-18 09:36:44.011445
+[2025-06-18 17:38:02,085] INFO: [ATTENDANCE] supriya entered at 2025-06-18 17:38:02.085043
+[2025-06-19 09:33:24,125] WARNING: Not Found: /favicon.ico
+[2025-06-19 09:34:15,821] INFO: [ATTENDANCE] supriya entered at 2025-06-19 09:34:15.821150
+[2025-06-19 17:35:34,205] INFO: [ATTENDANCE] supriya entered at 2025-06-19 17:35:34.205749
+[2025-06-24 09:26:15,148] WARNING: Not Found: /favicon.ico
+[2025-06-24 09:27:09,645] INFO: [ATTENDANCE] supriya entered at 2025-06-24 09:27:09.645791
+[2025-06-25 09:35:40,306] WARNING: Not Found: /favicon.ico
+[2025-06-25 09:36:03,163] INFO: [ATTENDANCE] shravani entered at 2025-06-25 09:36:03.163527
+[2025-06-25 09:36:41,270] INFO: [ATTENDANCE] supriya entered at 2025-06-25 09:36:41.270691
+[2025-06-25 09:51:02,007] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-25 10:47:38,736] ERROR: Internal Server Error: /attendance/leaderboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 342, in attendance_leaderboard
+    return render(request, 'attendance_leaderboard.html', {
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 1075, in render
+    output = self.filter_expression.resolve(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 749, in resolve
+    new_obj = func(obj, *arg_vals)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\defaultfilters.py", line 813, in timesince_filter
+    return timesince(value, arg)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\utils\timesince.py", line 62, in timesince
+    d = datetime.datetime(d.year, d.month, d.day)
+AttributeError: 'datetime.timedelta' object has no attribute 'year'
+[2025-06-25 11:04:36,031] ERROR: Internal Server Error: /attendance/leaderboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 342, in attendance_leaderboard
+    return render(request, 'attendance_leaderboard.html', {
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\defaulttags.py", line 1540, in do_with
+    nodelist = parser.parse(("endwith",))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\defaulttags.py", line 1540, in do_with
+    nodelist = parser.parse(("endwith",))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 489, in parse
+    raise self.error(token, e)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'format'
+[2025-06-25 11:12:19,213] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-25 14:42:31,030] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-25 14:52:06,079] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-25 14:54:04,084] ERROR: Internal Server Error: /attendance/summary/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 271, in attendance_summary
+    'names': mark_safe(json.dumps(names)),
+NameError: name 'mark_safe' is not defined
+[2025-06-25 15:01:12,641] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-25 15:46:48,015] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-26 09:41:30,307] WARNING: Not Found: /favicon.ico
+[2025-06-26 09:42:19,731] INFO: [ATTENDANCE] supriya entered at 2025-06-26 09:42:19.731234
+[2025-06-26 18:07:35,688] WARNING: Not Found: /favicon.ico
+[2025-06-26 18:08:53,359] INFO: [ATTENDANCE] supriya entered at 2025-06-26 18:08:53.359638
+[2025-06-27 11:29:40,743] WARNING: Not Found: /favicon.ico
+[2025-06-27 11:29:54,991] ERROR: Internal Server Error: /attendance/logs/details/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 407, in attendance_log_details
+    entries = entries.order_by('attendance__face__first_name', 'attendance__date', 'timestamp')
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\query.py", line 1708, in order_by
+    obj.query.add_ordering(*field_names)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\sql\query.py", line 2288, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\sql\query.py", line 1802, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'attendance' into field. Choices are: date, event_type, face, face_id, id, time
+[2025-06-27 11:34:23,196] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-27 11:42:04,268] ERROR: Internal Server Error: /attendance/logs/details/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 1016, in <listcomp>
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loader_tags.py", line 134, in render
+    compiled_parent = self.get_parent(context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loader_tags.py", line 131, in get_parent
+    return self.find_template(parent, context)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loader_tags.py", line 109, in find_template
+    template, origin = context.template.engine.find_template(
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\engine.py", line 163, in find_template
+    raise TemplateDoesNotExist(name, tried=tried)
+django.template.exceptions.TemplateDoesNotExist: base.html
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 412, in attendance_log_details
+    return render(request, 'attendance_log_details.html', {
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\backends\django.py", line 109, in render
+    reraise(exc, self.backend)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\template\backends\django.py", line 130, in reraise
+    raise new from exc
+django.template.exceptions.TemplateDoesNotExist: base.html
+[2025-06-27 11:58:37,353] INFO: [ATTENDANCE] supriya entered at 2025-06-27 11:58:37.353064
+[2025-06-27 12:18:07,777] ERROR: Internal Server Error: /attendance/logs/details/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 412, in attendance_log_details
+    entries = entries.order_by('face__first_name', 'date', 'time')
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\query.py", line 1708, in order_by
+    obj.query.add_ordering(*field_names)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\sql\query.py", line 2288, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\db\models\sql\query.py", line 1802, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'date' into field. Choices are: event_type, face, face_id, id, timestamp
+[2025-06-27 12:21:08,698] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-27 12:21:43,955] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-27 14:04:44,121] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-27 14:39:20,251] INFO: [ATTENDANCE] supriya entered at 2025-06-27 14:39:20.251797
+[2025-06-27 14:58:38,373] INFO: [ATTENDANCE] supriya entered at 2025-06-27 14:58:38.373069
+[2025-06-27 15:49:17,044] INFO: [ATTENDANCE] shravani entered at 2025-06-27 15:49:17.044172
+[2025-06-27 15:53:56,960] INFO: [ATTENDANCE] supriya entered at 2025-06-27 15:53:56.960366
+[2025-06-27 16:29:00,839] INFO: [ATTENDANCE] supriya entered at 2025-06-27 16:29:00.839639
+[2025-06-27 16:39:37,780] INFO: [ATTENDANCE] supriya entered at 2025-06-27 16:39:37.780292
+[2025-06-27 16:46:59,561] INFO: [ATTENDANCE] supriya entered at 2025-06-27 16:46:59.561267
+[2025-06-27 16:59:16,697] INFO: [ATTENDANCE] supriya entered at 2025-06-27 16:59:16.697977
+[2025-06-27 17:12:06,194] INFO: [ATTENDANCE] supriya entered at 2025-06-27 17:12:06.194870
+[2025-06-27 17:33:28,291] INFO: [ATTENDANCE] supriya entered at 2025-06-27 17:33:28.291897
+[2025-06-27 17:46:03,555] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-27 18:09:28,412] INFO: [ATTENDANCE] supriya entered at 2025-06-27 18:09:28.412584
+[2025-06-27 18:16:17,941] INFO: [ATTENDANCE] supriya entered at 2025-06-27 18:16:17.941975
+[2025-06-27 18:20:09,945] INFO: [ATTENDANCE] supriya entered at 2025-06-27 18:20:09.945389
+[2025-06-30 09:37:40,922] WARNING: Not Found: /favicon.ico
+[2025-06-30 09:38:45,937] INFO: [ATTENDANCE] supriya entered at 2025-06-30 09:38:45.937224
+[2025-06-30 09:47:10,924] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-06-30 10:05:33,155] INFO: [ATTENDANCE] supriya entered at 2025-06-30 10:05:33.155504
+[2025-06-30 10:26:49,310] INFO: [ATTENDANCE] supriya entered at 2025-06-30 10:26:49.310383
+[2025-06-30 10:39:05,083] INFO: [ATTENDANCE] supriya entered at 2025-06-30 10:39:05.083998
+[2025-06-30 11:04:31,076] INFO: [ATTENDANCE] supriya entered at 2025-06-30 11:04:31.076969

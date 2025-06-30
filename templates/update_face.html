@@ -39,8 +39,18 @@
     <h2 style="text-align:center;">Update Face Data</h2>
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="name">Name:</label>
-        <input type="text" name="name" value="{{ face.name }}" required>
+
+        <label for="employee_id">Employee ID:</label>
+        <input type="text" name="employee_id" value="{{ face.employee_id }}" required>
+
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" value="{{ face.first_name }}" required>
+
+        <label for="middle_name">Middle Name:</label>
+        <input type="text" name="middle_name" value="{{ face.middle_name|default_if_none:'' }}">
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" value="{{ face.last_name }}" required>
 
         <label for="image">Change Image (optional):</label>
         <input type="file" name="image" accept="image/*">
