@@ -747,3 +747,27 @@ django.core.exceptions.FieldError: Cannot resolve keyword 'date' into field. Cho
 [2025-06-30 10:26:49,310] INFO: [ATTENDANCE] supriya entered at 2025-06-30 10:26:49.310383
 [2025-06-30 10:39:05,083] INFO: [ATTENDANCE] supriya entered at 2025-06-30 10:39:05.083998
 [2025-06-30 11:04:31,076] INFO: [ATTENDANCE] supriya entered at 2025-06-30 11:04:31.076969
+[2025-06-30 17:26:41,752] INFO: [ATTENDANCE] supriya entered at 2025-06-30 17:26:41.752192
+[2025-07-01 09:32:30,602] WARNING: Not Found: /favicon.ico
+[2025-07-01 09:33:08,034] INFO: [ATTENDANCE] supriya entered at 2025-07-01 09:33:08.034580
+[2025-07-01 11:40:50,280] ERROR: Internal Server Error: /update-face/10/
+Traceback (most recent call last):
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python310\lib\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py", line 122, in update_face
+    rebuild_faiss_index()
+  File "C:\Users\Admin\Downloads\face_recognition_admin\faceapp\faiss_utils.py", line 26, in rebuild_faiss_index
+    index = faiss.IndexFlatL2(embeddings_np.shape[1])
+IndexError: tuple index out of range
+[2025-07-01 11:45:34,311] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\faiss_utils.py changed, reloading.
+[2025-07-01 11:55:08,040] INFO: [ATTENDANCE] supriya entered at 2025-07-01 11:55:08.040588
+[2025-07-01 14:11:26,544] INFO: C:\Users\Admin\Downloads\face_recognition_admin\faceapp\views.py changed, reloading.
+[2025-07-01 14:18:10,043] INFO: [ATTENDANCE] supriya entered at 2025-07-01 14:18:10.043882
+[2025-07-01 16:25:29,826] INFO: [ATTENDANCE] supriya entered at 2025-07-01 16:25:29.826442
+[2025-07-01 18:10:54,129] INFO: [ATTENDANCE] supriya entered at 2025-07-01 18:10:54.129854
+[2025-07-02 09:26:37,964] WARNING: Not Found: /favicon.ico
+[2025-07-02 09:27:01,880] INFO: [ATTENDANCE] supriya entered at 2025-07-02 09:27:01.880984

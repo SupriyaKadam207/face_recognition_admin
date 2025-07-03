@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 from django.db.models.functions import TruncDate
 from collections import defaultdict
 from django.db.models import Max
-
+from .faiss_utils import rebuild_faiss_index
 from .models import FaceData, UserLog, Attendance
 from .models import AttendanceLogEntry
 from face_recognition_module import run_faiss_recognition_from_frame
@@ -23,6 +23,24 @@ import threading
 import time
 import io
 import json
+
+import numpy as np
+import face_recognition
+from PIL import Image
+
+def extract_embedding_from_image(image_field):
+    try:
+        image = face_recognition.load_image_file(image_field)
+        encodings = face_recognition.face_encodings(image)
+        if encodings:
+            return np.array(encodings[0], dtype=np.float32).tobytes()
+        else:
+            print("⚠️ No face found in image.")
+            return None
+    except Exception as e:
+        print(f"❌ Error extracting embedding: {e}")
+        return None
+
 
 # ------------------ Threaded Video Capture ------------------
 
@@ -62,14 +80,22 @@ def custom_admin_view(request):
             if FaceData.objects.filter(employee_id=employee_id).exists():
                 return redirect('custom_admin')
 
+            # Extract embedding from uploaded image
+            embedding = extract_embedding_from_image(image)
+            if not embedding:
+                print("❌ Embedding could not be extracted. User not added.")
+                return redirect('custom_admin')
+
             face = FaceData(
                 employee_id=employee_id,
                 first_name=first_name,
                 middle_name=middle_name,
                 last_name=last_name,
-                image=image
+                image=image,
+                embedding=embedding
             )
             face.save()
+            rebuild_faiss_index()
             UserLog.objects.create(user=request.user, action=f"Added user: {face.full_name()} ({employee_id})")
             return redirect('custom_admin')
 
@@ -101,23 +127,37 @@ def delete_face(request, face_id):
         face = get_object_or_404(FaceData, id=face_id)
         full_name = face.full_name()
         face.delete()
+        rebuild_faiss_index()
         UserLog.objects.create(user=request.user, action=f"Deleted user: {full_name}")
     return redirect('custom_admin')
 
 @login_required
 def update_face(request, face_id):
     face = get_object_or_404(FaceData, id=face_id)
+
     if request.method == 'POST':
         face.employee_id = request.POST.get('employee_id')
         face.first_name = request.POST.get('first_name')
         face.middle_name = request.POST.get('middle_name')
         face.last_name = request.POST.get('last_name')
         image = request.FILES.get('image')
+
         if image:
+            # If image is updated, also update embedding
+            embedding = extract_embedding_from_image(image)
+            if not embedding:
+                print("❌ Embedding could not be extracted. Update aborted.")
+                return redirect('custom_admin')
+
             face.image = image
+            face.embedding = embedding
+
         face.save()
+        rebuild_faiss_index()
         UserLog.objects.create(user=request.user, action=f"Updated user: {face.full_name()}")
+
         return redirect('custom_admin')
+
     return render(request, 'update_face.html', {'face': face})
 
 # ------------------ Logs ------------------
